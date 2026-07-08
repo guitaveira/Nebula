@@ -1,0 +1,60 @@
+# Gradle
+.gradle/
+build/
+**/build/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+.navigation/
+captures/
+.externalNativeBuild/
+.cxx/
+local.properties
+
+# Kotlin
+.kotlin/
+
+# Keystore files (nunca versionar chaves de assinatura!)
+*.jks
+*.keystore
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# APK / AAB gerados
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# Firebase (arquivos sensíveis - opcional, veja nota abaixo)
+# google-services.json
+# GoogleService-Info.plist
+
+# NDK
+obj/
+
+# Ferramentas de teste / cobertura
+*.class
+
+# Freeline
+freeline.py
+freeline/
+freeline_project_description.json
+
+# Wearable
+wear/build/
+
+# Ambientes virtuais Python (caso use scripts auxiliares)
+venv/
+__pycache__/

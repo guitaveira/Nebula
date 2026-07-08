@@ -1,0 +1,7 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.Nebula" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/nebula_violet_950</item>
+        <item name="android:statusBarColor" tools:targetApi="21">@color/nebula_violet_950</item>
+        <item name="android:navigationBarColor" tools:targetApi="21">@color/nebula_violet_950</item>
+    </style>
+</resources>

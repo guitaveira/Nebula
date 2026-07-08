@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ic_launcher_background">#0E0A1C</color>
+    <color name="nebula_violet_950">#0E0A1C</color>
+    <color name="nebula_violet_700">#2E2350</color>
+    <color name="nebula_violet_500">#6D28D9</color>
+    <color name="nebula_violet_400">#8B5CF6</color>
+    <color name="nebula_violet_300">#B794FA</color>
+    <color name="nebula_off_white">#F7F5FC</color>
+</resources>

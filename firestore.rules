@@ -1,0 +1,76 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Perfis de usuário: qualquer usuário autenticado pode ler (necessário
+    // para exibir autor no feed e abrir o perfil de quem postou), mas só o
+    // dono pode criar/editar o próprio perfil (inclui edição do nome de
+    // usuário e da bio).
+    match /profiles/{userId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      // Além do próprio dono, qualquer usuário autenticado pode atualizar
+      // "followersCount"/"followingCount" — é assim que seguir/deixar de
+      // seguir alguém atualiza o contador do outro perfil sem exigir que o
+      // dono esteja "presente" para aprovar a escrita (mesmo padrão usado
+      // para curtidas em publicações/comentários).
+      allow update: if request.auth != null && (
+                      request.auth.uid == userId ||
+                      request.resource.data.diff(resource.data).affectedKeys()
+                        .hasOnly(['followersCount', 'followingCount'])
+                    );
+      allow delete: if false;
+    }
+
+    // Relação de "seguir": um documento por aresta, id "{followerId}_{followedId}".
+    // Leitura livre para autenticados (necessário para saber se já sigo alguém
+    // e para futuras listas de seguidores/seguindo). Só o próprio seguidor
+    // pode criar ou apagar a aresta que ele mesmo criou.
+    match /follows/{followId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+                    && request.resource.data.followerId == request.auth.uid;
+      allow delete: if request.auth != null
+                    && resource.data.followerId == request.auth.uid;
+      allow update: if false;
+    }
+
+    // Publicações: leitura para qualquer usuário autenticado (feed em tempo
+    // real e grade do perfil). Criação apenas com authorId igual ao usuário
+    // logado. Edição é permitida ao autor (qualquer campo) OU a qualquer
+    // usuário autenticado, desde que a alteração toque apenas os campos de
+    // curtida/contagem de comentários — é assim que o botão de curtir e o
+    // contador de comentários funcionam sem exigir que o autor esteja
+    // "presente" para aprovar a escrita.
+    match /publications/{publicationId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+                    && request.resource.data.authorId == request.auth.uid;
+      allow update: if request.auth != null && (
+                      resource.data.authorId == request.auth.uid ||
+                      request.resource.data.diff(resource.data).affectedKeys()
+                        .hasOnly(['likedBy', 'commentsCount'])
+                    );
+      allow delete: if request.auth != null
+                    && resource.data.authorId == request.auth.uid;
+
+      // Comentários de uma publicação: leitura livre para autenticados,
+      // criação apenas em nome do próprio usuário, curtida liberada para
+      // qualquer autenticado (mesma lógica de campo restrito acima) e
+      // remoção apenas pelo autor do comentário.
+      match /comments/{commentId} {
+        allow read: if request.auth != null;
+        allow create: if request.auth != null
+                      && request.resource.data.authorId == request.auth.uid;
+        allow update: if request.auth != null && (
+                        resource.data.authorId == request.auth.uid ||
+                        request.resource.data.diff(resource.data).affectedKeys()
+                          .hasOnly(['likedBy'])
+                      );
+        allow delete: if request.auth != null
+                      && resource.data.authorId == request.auth.uid;
+      }
+    }
+  }
+}
